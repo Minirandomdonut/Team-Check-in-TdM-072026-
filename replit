@@ -1,0 +1,6 @@
+run = "npm start"
+entrypoint = "index.js"
+
+[deployment]
+deploymentTarget = "autoscale"
+run = ["npm", "start"]

@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Team Check-In · AI Leadership Intensive</title>
+
+<style>
+  :root{
+    --ink:#00243f; --ink-2:#0a3a5f; --paper:#f6f4ee; --card:#ffffff; --line:#e4dfd3;
+    --gold:#e8a723; --gold-deep:#b47c0e; --go:#1f8a5b; --muted:#5d6b76; --danger:#b23b3b;
+    --radius:14px; --shadow:0 1px 2px rgba(0,36,63,.06), 0 12px 32px rgba(0,36,63,.08);
+  }
+  *{box-sizing:border-box} html,body{margin:0}
+  body{font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    background:radial-gradient(1200px 500px at 80% -10%, rgba(232,167,35,.10), transparent 60%), var(--paper);
+    color:var(--ink); line-height:1.5; min-height:100vh; -webkit-font-smoothing:antialiased;}
+  .mono{font-family:'JetBrains Mono','SFMono-Regular',ui-monospace,Menlo,monospace}
+  .wrap{max-width:720px;margin:0 auto;padding:28px 20px 72px}
+  .wrap.wide{max-width:940px}
+  header{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:26px}
+  .brand .eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-deep);font-weight:600}
+  .brand h1{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:26px;margin:2px 0 0;letter-spacing:-.01em}
+  .brand p{margin:4px 0 0;color:var(--muted);font-size:14px}
+  .viewlink{background:none;border:none;color:var(--ink-2);font:inherit;font-size:13px;cursor:pointer;padding:6px 2px;border-bottom:1px dashed var(--line)}
+  .viewlink:hover{color:var(--gold-deep)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:26px 24px}
+  .field{margin-bottom:20px}
+  label.lab{display:block;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink);margin-bottom:8px}
+  label.lab .req{color:var(--gold-deep)}
+  .hint{font-weight:400;text-transform:none;letter-spacing:normal;color:var(--muted);font-size:12px;margin-left:6px}
+  input[type=text],input[type=url],textarea{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:15px;color:var(--ink);background:#fffdf8;transition:border-color .15s, box-shadow .15s;}
+  input:focus,textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(232,167,35,.18)}
+  textarea{resize:vertical;min-height:64px}
+  .countrow{display:flex;justify-content:space-between;margin-top:6px}
+  .count{font-size:12px;color:var(--muted)}
+  .members{display:flex;flex-direction:column;gap:10px}
+  .mrow{display:grid;grid-template-columns:1.1fr 1.3fr auto auto;gap:8px;align-items:center;background:#fffdf8;border:1px solid var(--line);border-radius:11px;padding:9px 10px}
+  .mrow input{background:#fff}
+  .pmbox{display:flex;align-items:center;gap:6px;white-space:nowrap;padding:0 4px}
+  .pmbox input{width:17px;height:17px;accent-color:var(--gold-deep);cursor:pointer}
+  .pmbox label{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--gold-deep);cursor:pointer}
+  .rm{border:none;background:none;color:var(--muted);font-size:18px;line-height:1;cursor:pointer;padding:2px 6px;border-radius:6px}
+  .rm:hover{color:var(--danger);background:rgba(178,59,59,.08)}
+  .addrow{margin-top:12px;display:flex;align-items:center;gap:12px}
+  .addbtn{border:1px dashed var(--line);background:transparent;color:var(--ink-2);font:inherit;font-size:13px;font-weight:600;padding:9px 14px;border-radius:10px;cursor:pointer}
+  .addbtn:hover:not(:disabled){border-color:var(--gold);color:var(--gold-deep)}
+  .addbtn:disabled{opacity:.45;cursor:not-allowed}
+  .addnote{font-size:12px;color:var(--muted)}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:10px;font:inherit;font-weight:600;font-size:15px;cursor:pointer;padding:13px 20px;transition:transform .06s, filter .15s}
+  .btn:active{transform:translateY(1px)}
+  .btn-primary{background:var(--ink);color:#fff;width:100%;margin-top:6px}
+  .btn-primary:hover{filter:brightness(1.12)}
+  .btn-ghost{background:transparent;color:var(--ink-2);border:1px solid var(--line)}
+  .btn-ghost:hover{border-color:var(--gold)}
+  .btn-sm{padding:8px 13px;font-size:13px;border-radius:8px}
+  .msg{font-size:13px;margin-top:12px;min-height:18px}
+  .msg.err{color:var(--danger)} .msg.ok{color:var(--go)}
+  .confirm{text-align:center;padding:12px 6px}
+  .check{width:56px;height:56px;border-radius:50%;background:rgba(31,138,91,.12);color:var(--go);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:28px}
+  .confirm h2{font-family:'Space Grotesk',sans-serif;margin:0 0 6px;font-size:22px}
+  .confirm p{color:var(--muted);margin:0 0 20px}
+  .confirm .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .gate{max-width:360px}
+  .stats{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+  .stat{flex:1;min-width:120px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .stat .n{font-family:'Space Grotesk',sans-serif;font-size:30px;font-weight:600;line-height:1}
+  .stat .l{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:4px}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;align-items:center}
+  .toolbar .spacer{flex:1}
+  .team{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:20px 22px;margin-bottom:16px}
+  .team-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+  .team-tag{font-size:12px;letter-spacing:.08em;background:var(--ink);color:#fff;padding:4px 10px;border-radius:6px}
+  .team-count{font-size:12px;color:var(--muted)}
+  .idea{font-size:16px;font-style:italic;color:var(--ink-2);border-left:3px solid var(--gold);padding:2px 0 2px 14px;margin:6px 0 16px}
+  .idea.none{color:var(--muted);font-style:normal;border-color:var(--line)}
+  .roster{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+  .roster li{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:14px}
+  .pm-badge{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:rgba(232,167,35,.18);color:var(--gold-deep);padding:2px 7px;border-radius:5px}
+  .roster a{color:var(--ink-2);font-size:13px;text-decoration:none;border-bottom:1px solid var(--line)}
+  .roster a:hover{color:var(--gold-deep);border-color:var(--gold)}
+  .noln{font-size:12px;color:var(--muted)}
+  .empty{text-align:center;color:var(--muted);padding:48px 20px}
+  .empty h2{font-family:'Space Grotesk',sans-serif;color:var(--ink);margin:0 0 6px}
+  .foot{margin-top:26px;font-size:12px;color:var(--muted);text-align:center}
+  @media (max-width:560px){
+    .brand h1{font-size:22px}
+    .mrow{grid-template-columns:1fr auto;gap:8px}
+    .mrow input[type=url]{grid-column:1 / -1}
+    .pmbox{grid-column:1 / 2}
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<div id="app"></div>
+
+<script>
+const MAX_MEMBERS = 6;
+const $ = (s, el=document) => el.querySelector(s);
+const app = document.getElementById('app');
+let view = 'submit';
+let unlocked = false;
+let adminCode = '';
+let lastTeams = [];
+
+function header(){
+  return `<header>
+    <div class="brand">
+      <div class="eyebrow">AI Leadership Intensive &middot; Berkeley Innovation Group</div>
+      <h1>Team Check-In</h1>
+      <p>${view==='submit'
+        ? 'One person per team: add your name, your teammates, and your idea.'
+        : 'Live roster of every team submitted so far.'}</p>
+    </div>
+    <button class="viewlink" id="switch">${view==='submit'?'Instructor view &rarr;':'&larr; Back to check-in'}</button>
+  </header>`;
+}
+
+function memberRowHTML(){
+  return `<div class="mrow">
+      <input type="text" class="m-name" placeholder="Full name" autocomplete="off">
+      <input type="url" class="m-ln" placeholder="LinkedIn URL (optional)" autocomplete="off">
+      <span class="pmbox"><input type="checkbox" class="m-pm" id="pm-__ID__"><label for="pm-__ID__">PM</label></span>
+      <button type="button" class="rm" title="Remove">&times;</button>
+    </div>`;
+}
+
+function renderSubmit(){
+  app.className=''; app.innerHTML='';
+  const wrap = document.createElement('div'); wrap.className='wrap';
+  wrap.innerHTML = header() + `
+    <div class="card">
+      <div class="field">
+        <label class="lab" for="f-team">Team name <span class="req">*</span></label>
+        <input type="text" id="f-team" placeholder="e.g. Studybuddy">
+      </div>
+      <div class="field">
+        <label class="lab">Team members <span class="req">*</span><span class="hint">up to six &mdash; check one box to mark your first PM</span></label>
+        <div class="members" id="members"></div>
+        <div class="addrow">
+          <button type="button" class="addbtn" id="addm">+ Add teammate</button>
+          <span class="addnote" id="addnote"></span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="lab" for="f-idea">Your idea, in one sentence <span class="req">*</span></label>
+        <textarea id="f-idea" maxlength="240" placeholder="A study tool that turns lecture notes into a five-question quiz."></textarea>
+        <div class="countrow"><span class="count" id="count">0 / 240</span><span class="count">one thing, done well</span></div>
+      </div>
+      <button class="btn btn-primary" id="submit">Check in our team</button>
+      <div class="msg" id="msg"></div>
+    </div>
+    <div class="foot">Your entry is shared with the instructor for this program only.</div>`;
+  app.appendChild(wrap);
+
+  $('#switch').onclick = ()=>{ view='admin'; render(); };
+  const members = $('#members');
+  let rowSeq = 0;
+  function addRow(){
+    if(members.children.length >= MAX_MEMBERS) return;
+    const tmp=document.createElement('div');
+    tmp.innerHTML = memberRowHTML().replace(/__ID__/g,'r'+(rowSeq++));
+    const row=tmp.firstElementChild;
+    members.appendChild(row);
+    row.querySelector('.rm').onclick=()=>{ if(members.children.length>1){ row.remove(); syncControls(); } };
+    row.querySelector('.m-pm').addEventListener('change', function(){
+      if(this.checked) members.querySelectorAll('.m-pm').forEach(cb=>{ if(cb!==this) cb.checked=false; });
+    });
+    syncControls();
+  }
+  function syncControls(){
+    const n=members.children.length;
+    members.querySelectorAll('.rm').forEach(b=> b.style.visibility = n>1?'visible':'hidden');
+    const add=$('#addm'); add.disabled = n>=MAX_MEMBERS;
+    $('#addnote').textContent = n>=MAX_MEMBERS ? 'Maximum of six members.' : (n+' of '+MAX_MEMBERS);
+  }
+  addRow(); addRow(); addRow();
+  $('#addm').onclick = addRow;
+  const idea=$('#f-idea'), count=$('#count');
+  idea.addEventListener('input', ()=> count.textContent = idea.value.length+' / 240');
+  $('#submit').onclick = handleSubmit;
+}
+
+async function handleSubmit(){
+  const msg=$('#msg'); msg.className='msg';
+  const teamName=$('#f-team').value.trim();
+  const idea=$('#f-idea').value.trim();
+  const members=[];
+  document.querySelectorAll('#members .mrow').forEach(row=>{
+    const name=row.querySelector('.m-name').value.trim();
+    const linkedin=row.querySelector('.m-ln').value.trim();
+    const isPM=row.querySelector('.m-pm').checked;
+    if(name) members.push({name, linkedin, isPM});
+  });
+  if(!teamName){ msg.classList.add('err'); msg.textContent='Please add a team name.'; return; }
+  if(members.length===0){ msg.classList.add('err'); msg.textContent='Add at least one team member (a name).'; return; }
+  if(!idea){ msg.classList.add('err'); msg.textContent='Add your one-sentence idea.'; return; }
+  const btn=$('#submit'); btn.disabled=true; btn.textContent='Checking in...';
+  try{
+    const r = await fetch('/api/submit', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({teamName, members, idea})});
+    if(!r.ok) throw new Error();
+    renderConfirm(teamName, members.length);
+  }catch(e){
+    msg.classList.add('err'); msg.textContent='Something went wrong saving that. Try once more.';
+    btn.disabled=false; btn.textContent='Check in our team';
+  }
+}
+
+function renderConfirm(teamName, count){
+  app.innerHTML='';
+  const wrap=document.createElement('div'); wrap.className='wrap';
+  wrap.innerHTML = header() + `
+    <div class="card confirm">
+      <div class="check">&check;</div>
+      <h2>${esc(teamName)} is checked in.</h2>
+      <p>${count} ${count===1?'member':'members'} on the board. See you in class.</p>
+      <div class="row"><button class="btn btn-ghost btn-sm" id="again">Submit another team</button></div>
+    </div>`;
+  app.appendChild(wrap);
+  $('#switch').onclick = ()=>{ view='admin'; render(); };
+  $('#again').onclick = renderSubmit;
+}
+
+function renderGate(){
+  app.innerHTML='';
+  const wrap=document.createElement('div'); wrap.className='wrap';
+  wrap.innerHTML = header() + `
+    <div class="card gate">
+      <div class="field">
+        <label class="lab" for="f-code">Instructor passcode</label>
+        <input type="text" id="f-code" placeholder="enter passcode" autocomplete="off">
+      </div>
+      <button class="btn btn-primary" id="unlock">View roster</button>
+      <div class="msg" id="gmsg"></div>
+    </div>`;
+  app.appendChild(wrap);
+  $('#switch').onclick = ()=>{ view='submit'; render(); };
+  const go = async ()=>{
+    const code=$('#f-code').value.trim();
+    const m=$('#gmsg'); m.className='msg';
+    try{
+      const r = await fetch('/api/roster?code='+encodeURIComponent(code));
+      if(r.status===401){ m.classList.add('err'); m.textContent='That passcode did not match.'; return; }
+      const data = await r.json();
+      adminCode = code; unlocked = true; lastTeams = data.teams||[];
+      renderAdmin(true);
+    }catch(e){ m.classList.add('err'); m.textContent='Could not reach the server.'; }
+  };
+  $('#unlock').onclick = go;
+  $('#f-code').addEventListener('keydown', e=>{ if(e.key==='Enter') go(); });
+}
+
+async function renderAdmin(haveData){
+  app.innerHTML='';
+  const wrap=document.createElement('div'); wrap.className='wrap wide';
+  wrap.innerHTML = header() + `<div id="content"><div class="empty"><h2>Loading...</h2></div></div>`;
+  app.appendChild(wrap);
+  $('#switch').onclick = ()=>{ view='submit'; render(); };
+
+  if(!haveData){
+    try{ const r=await fetch('/api/roster?code='+encodeURIComponent(adminCode)); const d=await r.json(); lastTeams=d.teams||[]; }
+    catch(e){ lastTeams=[]; }
+  }
+  const teams = lastTeams;
+  const content = $('#content');
+
+  if(teams.length===0){
+    content.innerHTML = `<div class="empty"><h2>No check-ins yet</h2><p>Teams will appear here as they submit. Reopen this view in the morning.</p>
+      <button class="btn btn-ghost btn-sm" id="refresh" style="margin-top:14px">Refresh</button></div>`;
+    $('#refresh').onclick = ()=>renderAdmin(false); return;
+  }
+
+  const totalStudents = teams.reduce((s,t)=> s+(t.members?t.members.length:0), 0);
+  const pmCount = teams.reduce((s,t)=> s+(t.members?t.members.filter(m=>m.isPM).length:0), 0);
+
+  let html = `
+    <div class="stats">
+      <div class="stat"><div class="n">${teams.length}</div><div class="l">Teams</div></div>
+      <div class="stat"><div class="n">${totalStudents}</div><div class="l">Students</div></div>
+      <div class="stat"><div class="n">${pmCount}</div><div class="l">PMs named</div></div>
+    </div>
+    <div class="toolbar">
+      <button class="btn btn-ghost btn-sm" id="refresh">&#8635; Refresh</button>
+      <button class="btn btn-ghost btn-sm" id="csv">Export CSV</button>
+      <button class="btn btn-ghost btn-sm" id="json">Export JSON</button>
+      <span class="spacer"></span>
+      <button class="btn btn-ghost btn-sm" id="clear" style="color:var(--danger);border-color:#e7cccc">Clear all</button>
+    </div>`;
+
+  for(const t of teams){
+    const mem=t.members||[];
+    html += `<div class="team">
+      <div class="team-head">
+        <span class="team-tag mono">${esc(t.teamName)}</span>
+        <span class="team-count">${mem.length} ${mem.length===1?'member':'members'}</span>
+      </div>
+      <div class="idea ${t.idea?'':'none'}">${t.idea?esc(t.idea):'No idea sentence submitted'}</div>
+      <ul class="roster">
+        ${mem.map(m=>`<li>
+            <span>${esc(m.name)}</span>
+            ${m.isPM?'<span class="pm-badge">First PM</span>':''}
+            ${m.linkedin?`<a href="${esc(m.linkedin)}" target="_blank" rel="noopener">LinkedIn &#8599;</a>`:'<span class="noln">no LinkedIn</span>'}
+          </li>`).join('')}
+      </ul>
+    </div>`;
+  }
+  content.innerHTML = html;
+
+  $('#refresh').onclick = ()=>renderAdmin(false);
+  $('#csv').onclick = ()=>{ window.location = '/api/export.csv?code='+encodeURIComponent(adminCode); };
+  $('#json').onclick = ()=> download('team-checkins.json', JSON.stringify(teams,null,2), 'application/json');
+  $('#clear').onclick = async ()=>{
+    if(!confirm('Delete every check-in? This cannot be undone.')) return;
+    await fetch('/api/clear', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({code:adminCode})});
+    renderAdmin(false);
+  };
+}
+
+function download(name, text, type){
+  const blob=new Blob([text],{type}); const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download=name; a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),500);
+}
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function render(){ if(view==='submit') renderSubmit(); else if(unlocked) renderAdmin(false); else renderGate(); }
+render();
+</script>
+</html>
